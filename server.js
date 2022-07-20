@@ -28,9 +28,14 @@ io.on('connection', (socket) => {
         // Broadcast when a user connects for everybody except for the connected user
         socket.broadcast
             .to(user.room)
-            .emit('message', formatMessage(botName, `${user.username} has joinned the chat`));
+            .emit('message', formatMessage(botName, `${user.username} has joinned the chat`)
+        );
 
-    
+        // Send users and room info
+        io.to(user.room).emit('roomUsers', {
+            room: user.room,
+            users: getRommUsers(user.room)
+        });
     });
 
     // Listen for chatMessage
@@ -53,6 +58,12 @@ io.on('connection', (socket) => {
             // for everyone
             io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
         }
+
+        // Send users and room info
+        io.to(user.room).emit('roomUsers', {
+            room: user.room,
+            users: getRommUsers(user.room)
+        });
     });
 });
 
